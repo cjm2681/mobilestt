@@ -1,4 +1,4 @@
-// TranscriptContext.js
+
 import React, { createContext, useState, useContext } from 'react';
 
 // Context 생성
