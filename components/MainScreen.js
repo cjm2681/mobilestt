@@ -1,17 +1,58 @@
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Alert  } from 'react-native';
+import { Alert, ToastAndroid, BackHandler  } from 'react-native';
 import SttScreen from './SttScreen';
-import SignupScreen from './SignupScreen';
 import { MaterialIcons, FontAwesome , MaterialCommunityIcons  } from '@expo/vector-icons';
 import SumScreen from './SumScreen';
 import TransScreen from './TransScreen';
+import UserScreen from './user/UserScreen';
 import { useTranscript } from './TranscriptContext';
+
 
 const Tab = createBottomTabNavigator();
 
 
 function MainScreen({ navigation }) {
+
+    const doubleBackToExitPressedOnce = useRef(false); // 뒤로가기 버튼 두 번 클릭 시 종료 처리를 위한 Ref
+
+  // 뒤로가기 버튼 핸들링을 위한 이벤트 리스너 등록
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (doubleBackToExitPressedOnce.current) {
+        BackHandler.exitApp(); // 앱 종료
+        return true;
+      }
+
+      doubleBackToExitPressedOnce.current = true;
+      setTimeout(() => {
+        doubleBackToExitPressedOnce.current = false;
+      }, 2000); // 2초 내에 다시 누르면 종료 안됨
+
+      ToastAndroid.show('한 번 더 누르면 종료됩니다', ToastAndroid.SHORT); // ToastAndroid로 메시지 표시
+
+      return true;
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', handleBackPress); // 뒤로가기 버튼 이벤트 리스너 등록
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackPress); // 컴포넌트가 언마운트될 때 이벤트 리스너 해제
+    };
+  }, []);
+
+
+  // 안드로이드에서 뒤로가기 버튼 숨기기
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      navigation.setOptions({
+        headerLeft: null,
+      });
+    }
+  }, [navigation]);
+
+
+
 
     const { transcript } = useTranscript();
 
@@ -40,6 +81,15 @@ function MainScreen({ navigation }) {
                 component={SttScreen}
                 options={{
                     title: '텍스트 요약',
+                    headerStyle: {
+                        backgroundColor: '#5B36AC', // 헤더의 배경색 설정
+                        height: 75,
+                      },
+                      headerTintColor: '#fff', // 헤더 타이틀의 색상 설정
+                      headerTitleStyle: {
+                        fontWeight: 'bold', // 헤더 타이틀의 폰트 스타일 설정
+                        height: 35,
+                      },
                     tabBarIcon: ({ color, size }) => (
                         <MaterialIcons name="home" color={color} size={size} />
                     )
@@ -51,6 +101,15 @@ function MainScreen({ navigation }) {
                 component={SumScreen}
                 options={{
                     title: '요약 및 감정분석',
+                    headerStyle: {
+                        backgroundColor: '#5B36AC', // 헤더의 배경색 설정
+                        height: 75,
+                      },
+                      headerTintColor: '#fff', // 헤더 타이틀의 색상 설정
+                      headerTitleStyle: {
+                        fontWeight: 'bold', // 헤더 타이틀의 폰트 스타일 설정
+                        height: 35,
+                      },
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="text-box-multiple" color={color} size={size} />
                     )
@@ -69,6 +128,15 @@ function MainScreen({ navigation }) {
                 component={TransScreen}
                 options={{
                     title: '번역',
+                    headerStyle: {
+                        backgroundColor: '#5B36AC', // 헤더의 배경색 설정
+                        height: 75,
+                      },
+                      headerTintColor: '#fff', // 헤더 타이틀의 색상 설정
+                      headerTitleStyle: {
+                        fontWeight: 'bold', // 헤더 타이틀의 폰트 스타일 설정
+                        height: 35,
+                      },
                     tabBarIcon: ({ color, size }) => (
                         <MaterialIcons name="g-translate" color = {color} size = {size} />
                     )
@@ -83,10 +151,20 @@ function MainScreen({ navigation }) {
             />
 
             <Tab.Screen
-                name="User"
-                component={SignupScreen}
+                name="UserScreen"
+                component={UserScreen}
                 options={{
+                    //headerShown: false,
                     title: '회원관리',
+                    headerStyle: {
+                        backgroundColor: '#5B36AC', // 헤더의 배경색 설정
+                        height: 75,
+                      },
+                      headerTintColor: '#fff', // 헤더 타이틀의 색상 설정
+                      headerTitleStyle: {
+                        fontWeight: 'bold', // 헤더 타이틀의 폰트 스타일 설정
+                        height: 35,
+                      },
                     tabBarIcon: ({color, size}) => (
                         <FontAwesome name="user" color={color} size={size}  />
                     )

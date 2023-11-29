@@ -4,7 +4,7 @@ import { View, Text, Button, ActivityIndicator} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useTranscript } from './TranscriptContext';
 
-export default function TransScreen({ navigation }) {
+function TransScreen({ navigation }) {
   const [transResult, setTransResult] = useState('')
   const [sourceLanguage, setSourceLanguage] = useState('ko')
   const [targetLanguage, setTargetLanguage] = useState('en')
@@ -144,3 +144,5 @@ export default function TransScreen({ navigation }) {
     </View>
   )
 }
+
+export default TransScreen

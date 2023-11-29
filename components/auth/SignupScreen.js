@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 
@@ -8,6 +8,14 @@ function SignupScreen({ navigation }) {
   const [username, setUsername] = useState(''); // 사용자 이름 입력 상태 관리
   const [password, setPassword] = useState(''); // 비밀번호 입력 상태 관리
   const [confirmPassword, setConfirmPassword] = useState(''); // 비밀번호 확인 입력 상태 관리
+
+  // 입력 필드 초기화 함수
+  const resetForm = () => {
+    setId('');
+    setUsername('');
+    setPassword('');
+    setConfirmPassword('');
+  }
 
   // 회원가입 버튼 클릭 시 실행되는 함수
   const handleSignup = () => {
@@ -26,6 +34,7 @@ function SignupScreen({ navigation }) {
         Alert.alert('성공', '회원가입이 성공적으로 완료되었습니다.', [
           { text: 'OK', onPress: () => navigation.navigate('Login') }, // OK 버튼 클릭 시 로그인 화면으로 이동
         ]);
+        resetForm();
       })
       .catch((error) => {
         if (error.response) {

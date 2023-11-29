@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
 
@@ -6,6 +6,12 @@ function LoginScreen({ navigation }) {
   // 상태 변수들
   const [id, setId] = useState(''); // 아이디 입력 상태 관리
   const [password, setPassword] = useState(''); // 비밀번호 입력 상태 관리
+
+  // 입력 필드 초기화 함수
+  const resetForm = () => {
+    setId('');
+    setPassword('');
+  }
 
   // 로그인 버튼 클릭 시 실행되는 함수
   const handleLogin = () => {
@@ -22,6 +28,7 @@ function LoginScreen({ navigation }) {
       .then((response) => {
         Alert.alert('성공', response.data); // 로그인 성공 시 알림창 표시
         navigation.navigate('MainHome'); 
+        resetForm();
       })
       .catch((error) => {
         if (error.response) {

@@ -5,7 +5,7 @@ import { Picker } from '@react-native-picker/picker';
 import { useTranscript } from './TranscriptContext';
 
 
-export default function SumScreen({ navigation }) {
+function SumScreen({ navigation }) {
   const [summary, setSummary] = useState('');
   const [sumSentiment, setSumSentiment] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('ko'); //번역 언어 선택
@@ -134,3 +134,6 @@ export default function SumScreen({ navigation }) {
     </View>
   );
 }
+
+
+export default SumScreen

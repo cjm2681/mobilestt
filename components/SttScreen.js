@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Button, Text, Platform, BackHandler, ToastAndroid, ScrollView, ActivityIndicator  } from 'react-native';
+import { View, Button, Text, Platform,   ScrollView, ActivityIndicator  } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { Picker } from '@react-native-picker/picker';
+import axios from 'axios'
 
 import ClovaSpeechClient from './Clova/ClovaSpeechClient'; // ClovaSpeechClient 클래스를 임포트
 
@@ -21,42 +22,10 @@ function SttScreen({ navigation }) {
 
   const [fileName, setFileName] = useState(''); // 파일 이름을 위한 새로운 상태
 
-  const doubleBackToExitPressedOnce = useRef(false); // 뒤로가기 버튼 두 번 클릭 시 종료 처리를 위한 Ref
-  const { setTranscript } = useTranscript();
 
-  // 뒤로가기 버튼 핸들링을 위한 이벤트 리스너 등록
-  useEffect(() => {
-    const handleBackPress = () => {
-      if (doubleBackToExitPressedOnce.current) {
-        BackHandler.exitApp(); // 앱 종료
-        return true;
-      }
+  const { setTranscript } = useTranscript();  //Context
 
-      doubleBackToExitPressedOnce.current = true;
-      setTimeout(() => {
-        doubleBackToExitPressedOnce.current = false;
-      }, 2000); // 2초 내에 다시 누르면 종료 안됨
 
-      ToastAndroid.show('한 번 더 누르면 종료됩니다', ToastAndroid.SHORT); // ToastAndroid로 메시지 표시
-
-      return true;
-    };
-
-    BackHandler.addEventListener('hardwareBackPress', handleBackPress); // 뒤로가기 버튼 이벤트 리스너 등록
-
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackPress); // 컴포넌트가 언마운트될 때 이벤트 리스너 해제
-    };
-  }, []);
-
-  // 안드로이드에서 뒤로가기 버튼 숨기기
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      navigation.setOptions({
-        headerLeft: null,
-      });
-    }
-  }, [navigation]);
 
 
 
@@ -77,6 +46,24 @@ function SttScreen({ navigation }) {
     }
   };
   
+
+
+
+
+  const uploadTranscription = async (audioFileName, transcriptionText) => {
+    try {
+      const response = await axios.post('http://220.94.222.233:4000/uploadTranscription', {
+        audioFileName,
+        transcriptionText
+      });
+  
+      console.log('서버 응답:', response.data);
+    } catch (error) {
+      console.error('업로드 중 오류 발생:', error);
+    }
+  };
+
+
 
 
   const handleTranscript = async () => {
@@ -100,7 +87,9 @@ function SttScreen({ navigation }) {
         setShowTranscript(true);  // 화자인식 버튼 보여주기
         setIsLoading(false); // 데이터 로딩 완료
 
-        setTranscript(res.data.text);
+        setTranscript(res.data.text); //TranscriptContext
+
+        uploadTranscription(fileName, res.data.text);
       }
     }
     
@@ -113,7 +102,7 @@ function SttScreen({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1}}>
       <Button title="파일 선택" onPress={handleFileChange} />
       
       {fileName && <Text>선택된 파일: {fileName}</Text>}
@@ -139,22 +128,22 @@ function SttScreen({ navigation }) {
         {isLoading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
-        <ScrollView style={{ flex: 2 }}>
+        <View style={{ flex: 2 }}>
         {showTranscript && <Text>{transcriptSave}</Text> }
-        </ScrollView>
+        </View>
         )}
         {showTranscript && <Button title="화자인식" onPress={handleSpeakerRecognition} />}
 
         {isLoading2 ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
-        <ScrollView style={{ flex: 2 }}>
-                {showTranscript2 && <Text>{transcript2}</Text> }
-        </ScrollView>
+        <View style={{ flex: 2 }}>
+                {showTranscript2 && <Text style={{paddingBottom: 30}}>{transcript2}</Text> }
+        </View>
         )}
 
         
-    </View>
+    </ScrollView>
 
   );
 }
