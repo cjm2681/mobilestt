@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { View, Text, Button,ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useTranscript } from './TranscriptContext';
+import { AntDesign } from '@expo/vector-icons';
 
 
 function SumScreen({ navigation }) {
@@ -15,7 +16,30 @@ function SumScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);  //로딩
 
 
-  const { transcript } = useTranscript();
+  const { transcript, transcriptionId } = useTranscript();
+
+
+
+  const uploadSummary = async (summaryText, transcriptionId) => {
+    console.log("Uploading summary with transcriptionId:", transcriptionId);
+    try {
+      const response = await axios.post('http://220.94.222.233:4000/uploadSummary', {
+        summaryText,
+        transcriptionId
+      });
+
+      console.log('서버 응답:', response.data);
+    } catch (error) {
+      console.error('업로드 중 오류 발생:', error);
+      console.error('요청 데이터:', { summaryText, transcriptionId });
+    }
+  };
+
+
+
+
+
+
 
   const handleSummary = async () => {
     setIsLoading(true);
@@ -44,6 +68,7 @@ function SumScreen({ navigation }) {
         config
       );
       setSummary(response.data.summary);
+      uploadSummary(response.data.summary, transcriptionId);
     } catch (error) {
       console.error(error);
     }
@@ -69,19 +94,19 @@ function SumScreen({ navigation }) {
     try {
       const response = await axios.post(
         "https://naveropenapi.apigw.ntruss.com/sentiment-analysis/v1/analyze",
-        { 
-          content: summary 
+        {
+          content: summary
         },
         config
       );
       setSumSentiment(response.data.document.sentiment);
-      
+
       // 가장 높은 감정 찾기
       const highestEmotion = Object.keys(response.data.document.confidence).reduce((a, b) => response.data.document.confidence[a] > response.data.document.confidence[b] ? a : b);
       setHighestSentiment(highestEmotion);
-      
+
       // 가장 높은 감정의 백분율 찾기
-      
+
       setHighestSentimentPercentage(response.data.document.confidence[highestEmotion].toFixed(1));
     } catch (error) {
       console.error(error);
@@ -89,20 +114,31 @@ function SumScreen({ navigation }) {
     }
   };
 
+
+
+
+
+
+
+
+
   return (
-    <View style ={{ flex: 1, alignItems: "center", justifyContent: "center"}}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} >
+      <Text style={styles.header}>요약할 언어 선택</Text>
       <Picker
         selectedValue={selectedLanguage}
-        style={{ height: 50, width: 200 }}
+        style={styles.picker}
         onValueChange={(itemValue, itemIndex) =>
           setSelectedLanguage(itemValue)
         }>
         <Picker.Item label="한국어" value="ko" />
         <Picker.Item label="일본어" value="ja" />
       </Picker>
+
+      <Text style={styles.subHeader}>요약할 문장 개수를 선택하세요</Text>
       <Picker
         selectedValue={selectedCount}
-        style={{ height: 50, width: 200 }}
+        style={styles.picker}
         onValueChange={(itemValue, itemIndex) =>
           setSelectedCount(itemValue)
         }>
@@ -110,30 +146,94 @@ function SumScreen({ navigation }) {
         <Picker.Item label="4줄로 요약" value="4" />
         <Picker.Item label="5줄로 요약" value="5" />
         <Picker.Item label="6줄로 요약" value="6" />
-        <Picker.Item label="7줄로 요약" value="7"/>
-        <Picker.Item label="8줄로 요약" value="8"/>
-        <Picker.Item label="9줄로 요약" value="9"/>
+        <Picker.Item label="7줄로 요약" value="7" />
+        <Picker.Item label="8줄로 요약" value="8" />
+        <Picker.Item label="9줄로 요약" value="9" />
+        <Picker.Item label="10줄로 요약" value="10" />
       </Picker>
 
-      <Button title="요약 결과 보기" onPress={handleSummary} />
-      { isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-      <View>
-      <Text>{summary}</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSummary}>
+        <AntDesign name="filetext1" size={24} color="white" />
+        <Text style={styles.buttonText}>요약 결과 보기</Text>
+      </TouchableOpacity>
 
-      {sumSentiment !== '' && (
-        <View style = {{flexDirection: 'row', padding: 10 , justifyContent: 'flex-end', alignItems: 'center'}}>
-          <Text>감정 분석 결과: </Text>
-          <Text>{highestSentimentPercentage}% { highestSentiment === 'negative' ? ('부정'): (highestSentiment === 'positive') ? ('긍정'): '중립' }적인 글입니다.</Text>
-          <Text></Text>
+      {isLoading && <ActivityIndicator size="large" color="#0000ff" />}
+
+      {!isLoading && summary && (
+        <View style={styles.resultContainer} >
+          <Text style={styles.resultText} >{summary}</Text>
+
+          {sumSentiment !== '' && (
+            <View style={{ flexDirection: 'row', padding: 10, justifyContent: 'flex-end', alignItems: 'center' }}>
+              <Text>감정 분석 결과: </Text>
+              <Text>{highestSentimentPercentage}% {highestSentiment === 'negative' ? ('부정') : (highestSentiment === 'positive') ? ('긍정') : '중립'}적인 글입니다.</Text>
+              <Text></Text>
+            </View>
+          )}
         </View>
       )}
-      </View>
-      )}
-    </View>
+    </ScrollView>
   );
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#F9F9F9',
+  },
+  contentContainer: {
+    paddingBottom: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subHeader: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  picker: {
+    width: 200,
+    height: 50,
+    borderColor: '#dddddd',
+    borderWidth: 1,
+    borderRadius: 10,
+    marginBottom: 10,
+    backgroundColor: 'white',
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 20,
+    backgroundColor: '#5B36AC',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  resultContainer: {
+    marginTop: 20,
+    width: '100%',
+  },
+  resultText: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#dddddd',
+    borderRadius: 10,
+    backgroundColor: 'white',
+  },
+});
 
 
 export default SumScreen

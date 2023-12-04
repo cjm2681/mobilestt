@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback  } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { MaterialIcons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -12,26 +12,39 @@ const UserScreen = ({ navigation }) => {
   });
 
 
-    // 사용자 정보를 불러오는 함수
-    const fetchUserInfo = () => {
-      axios.get('http://220.94.222.233:4000/userdata')
-        .then(response => {
-          setUser({
-            id: response.data.id,
-            username: response.data.username,
-            password: '********' // 실제 애플리케이션에서는 비밀번호를 직접 노출하지 않습니다
-          });
-        })
-        .catch(error => {
-          console.error('Error:', error);
+  const [transcriptions, setTranscriptions] = useState([]);
+
+
+  // 사용자 정보를 불러오는 함수
+  const fetchUserInfo = () => {
+    axios.get('http://220.94.222.233:4000/userdata')
+      .then(response => {
+        setUser({
+          id: response.data.id,
+          username: response.data.username,
+          password: '********' // 실제 애플리케이션에서는 비밀번호를 직접 노출하지 않습니다
         });
-    };
-  
-    useFocusEffect(
-      useCallback(() => {
-        fetchUserInfo(); // 화면에 포커스가 맞춰질 때마다 사용자 데이터 다시 불러오기
-      }, [])
-    );
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+
+    // 최근 변환 기록 3개 불러오기
+    axios.get('http://220.94.222.233:4000/allUserTranscriptions')
+      .then(response => {
+        setTranscriptions(response.data.slice(0, 3));
+      })
+      .catch(error => {
+        console.error('Error fetching transcriptions:', error);
+      });
+
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserInfo(); // 화면에 포커스가 맞춰질 때마다 사용자 데이터 다시 불러오기
+    }, [])
+  );
 
 
   useEffect(() => {
@@ -55,56 +68,53 @@ const UserScreen = ({ navigation }) => {
   }, []);
 
 
-    // 로그아웃 처리
-    const handleLogout = () => {
-      Alert.alert(
-        "로그아웃 확인",
-        "로그아웃 하시겠습니까?",
-        [
-          {
-            text: "예",
-            onPress: () => {
-              axios.get('http://220.94.222.233:4000/logout')
-                .then((response) => {
-                  if (response.status === 200) {
-                    navigation.navigate('Login'); // 로그인 화면으로 이동
-                  } else {
-                    Alert.alert("로그아웃 실패", response.data); // 로그아웃 실패 메시지 표시
-                  }
-                })
-                .catch((error) => {
-                  console.error('Error:', error);
-                });
-            },
+  // 로그아웃 처리
+  const handleLogout = () => {
+    Alert.alert(
+      "로그아웃 확인",
+      "로그아웃 하시겠습니까?",
+      [
+        {
+          text: "아니오",
+          style: "cancel",
+        },
+        {
+          text: "예",
+          onPress: () => {
+            axios.get('http://220.94.222.233:4000/logout')
+              .then((response) => {
+                if (response.status === 200) {
+                  navigation.navigate('Login'); // 로그인 화면으로 이동
+                } else {
+                  Alert.alert("로그아웃 실패", response.data); // 로그아웃 실패 메시지 표시
+                }
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+              });
           },
-          {
-            text: "아니오",
-            style: "cancel",
-          },
-        ]
-      );
-    }
+        },
+      ],
+      { cancelable: true }
+    );
+  }
 
 
-const changeScreen = () => (
-  navigation.navigate('UserInfo')
-)
+  const changeScreen = () => (
+    navigation.navigate('UserInfo')
+  )
 
-const changetransScreen = () => (
-  navigation.navigate('AllTrans')
-)
+  const changetransScreen = () => (
+    navigation.navigate('AllTrans')
+  )
 
 
 
   return (
 
 
-    <ScrollView style={styles.container}>
-      {/* <View style={styles.header}>
-        <Text style={styles.headerTitle}>내정보 관리</Text>
-      </View> */}
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
       <View style={styles.profileContainer}>
-
         <Text style={styles.name}>{user.username}</Text>
       </View>
 
@@ -135,24 +145,33 @@ const changetransScreen = () => (
 
 
         <View style={styles.historyGroup}>
-        <Text style={styles.infoUserTilte}>변환기록</Text>
+          <Text style={styles.infoUserTilte}>변환기록</Text>
           <TouchableOpacity onPress={changetransScreen}>
             <Text style={styles.modifyButtonText}>모든 변환기록 보기</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.infoGroup2}>
-
+        <View style={styles.infoContainer}>
+          {transcriptions.map((transcript, index) => (
+            <View key={index} style={styles.transcriptItem}>
+              <View>
+                <Text style={styles.transcriptText}>파일 이름: {transcript.audio_file_name}</Text>
+                <Text style={styles.transcriptText}>변환 시간: {new Date(transcript.created_at).toLocaleString()}</Text>
+                <Text style={styles.transcriptText}>텍스트 변환 내역:</Text>
+                <Text style={styles.transcriptContent}>{transcript.transcription_text}</Text>
+              </View>
+            </View>
+          ))}
         </View>
 
       </View>
 
-      
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <MaterialIcons name="logout" size={24} color="#FFFFFF" />
-          <Text style={styles.logoutText}>Log out</Text>
-        </TouchableOpacity>
-      
+
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <MaterialIcons name="logout" size={24} color="#FFFFFF" />
+        <Text style={styles.logoutText}>Log out</Text>
+      </TouchableOpacity>
+
 
 
     </ScrollView>
@@ -163,33 +182,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9F9F9',
-    paddingBottom: 30,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#5B36AC',
-  },
-  headerTitle: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-
   },
   profileContainer: {
     alignItems: 'center',
     paddingVertical: 18,
     backgroundColor: 'white',
-  },
-  avatar: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    marginBottom: 12,
   },
   name: {
     fontSize: 20,
@@ -207,7 +204,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between', // 요소들을 양 끝으로 분산
     alignItems: 'center', // 수직 방향으로 중앙 정렬
-    
+
   },
   infoGroup2: {
     backgroundColor: 'white',
@@ -223,24 +220,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between', // 요소들을 양 끝으로 분산
     alignItems: 'center', // 수직 방향으로 중앙 정렬
-    
+
   },
   infoUserTilte: {
     backgroundColor: 'white',
-
-  },
-  infoTitle: {
-    fontSize: 16,
-    color: '#888888',
-    marginBottom: 8,
   },
   infoValue: {
     fontSize: 16,
     color: '#333333',
     marginBottom: 4,
-  },
-  infoUserTitle: {
-    // 회원정보 타이틀 스타일
   },
   infoRow: {
     flexDirection: 'row',
@@ -267,7 +255,24 @@ const styles = StyleSheet.create({
   logoutText: {
     color: '#FFFFFF', // 텍스트 색상
     fontWeight: 'bold', // 텍스트 굵게
-
+  },
+  transcriptItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    marginBottom: 30,
+  },
+  transcriptText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  transcriptContent: {
+    fontSize: 14,
+    marginBottom: 15,
   },
 });
 

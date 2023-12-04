@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import axios from 'axios';
 
 function LoginScreen({ navigation }) {
@@ -27,7 +28,7 @@ function LoginScreen({ navigation }) {
       })
       .then((response) => {
         Alert.alert('성공', response.data); // 로그인 성공 시 알림창 표시
-        navigation.navigate('MainHome'); 
+        navigation.navigate('MainHome');
         resetForm();
       })
       .catch((error) => {
@@ -40,14 +41,22 @@ function LoginScreen({ navigation }) {
   };
 
   return (
+
     <View style={styles.container}>
-      <Text style={styles.title}> 음성기록 서비스</Text>
+    <Text style={styles.title}>음성기록 서비스</Text>
+    
+    <View style={styles.inputContainer}>
+      <MaterialCommunityIcons name="account" size={24} color="#ff8c00" />
       <TextInput
         value={id}
         onChangeText={setId}
         placeholder="아이디"
         style={styles.input}
       />
+    </View>
+
+    <View style={styles.inputContainer}>
+      <MaterialCommunityIcons name="lock" size={24} color="#ff8c00" />
       <TextInput
         value={password}
         onChangeText={setPassword}
@@ -55,11 +64,17 @@ function LoginScreen({ navigation }) {
         secureTextEntry
         style={styles.input}
       />
-      <View style={styles.buttonContainer}>
-        <Button title="로그인" onPress={handleLogin} color="#ff8c00" style={styles.button} />
-        <Button title="회원가입" onPress={() => navigation.navigate('Signup')} color="#ff8c00" style={styles.button} />
-      </View>
     </View>
+
+    <TouchableOpacity style={styles.button} onPress={handleLogin}>
+      <Text style={styles.buttonText}>로그인</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Signup')}>
+      <Text style={styles.buttonText}>회원가입</Text>
+    </TouchableOpacity>
+  </View>
+
   );
 }
 
@@ -69,7 +84,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f0e6d2',  // 크림색 계열의 배경
+    backgroundColor: '#F9F9F9',  // 크림색 계열의 배경
   },
   title: {
     fontSize: 32,
@@ -77,22 +92,40 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000000',  // 주황색 글씨
   },
-  input: {
-    height: 50,
-    width: '80%',
-    borderColor: '#ff8c00',  // 주황색 테두리
-    borderWidth: 2,
-    marginBottom: 20,
-    paddingLeft: 10,
-    borderRadius: 10,
-    backgroundColor: '#ffffff',  // 흰색 배경
-  },
   buttonContainer: {
     width: '80%', // 전체 비율에 맞게 조정
   },
   button: {
     marginBottom: 10,
-  }
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderColor: '#ff8c00',
+    borderWidth: 2,
+    borderRadius: 10,
+    paddingLeft: 10,
+    marginBottom: 20,
+  },
+  input: {
+    flex: 1,
+    height: 50,
+  },
+  button: {
+    width: '80%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: '#5B36AC',
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+  },
+
 });
 
 

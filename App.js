@@ -12,6 +12,7 @@ import TransSreen from './components/TransScreen'
 import UserScreen from './components/user/UserScreen';
 import UserInfoScreen from './components/user/UserInfoScreen';
 import AllTranscriptScreen from './components/trans/AllTranscriptScreen'
+import TranscriptDetailsScreen from './components/trans/TranscriptDetailsScreen';
 
 
 const Stack = createStackNavigator();
@@ -31,8 +32,9 @@ function App() {
           options={{ 
             title: '음성 기록 서비스',
             headerStyle: { 
-              backgroundColor: '#cece9c',
+              backgroundColor: '#5B36AC',
             },
+            headerTintColor: '#fff',
           
           }}
           
@@ -43,8 +45,9 @@ function App() {
         component={SignupScreen}
         options={{
         headerStyle: { 
-          backgroundColor: '#cece9c',
+          backgroundColor: '#5B36AC',
         },
+        headerTintColor: '#fff',
       }}
          />
         {/* Stt 화면 설정 */}
@@ -59,7 +62,8 @@ function App() {
         <Stack.Screen name="UserInfo" component={UserInfoScreen} options={{title:'유저 정보'}}/>
         {/* AllTrans 화면 설정 */}
         <Stack.Screen name="AllTrans" component={AllTranscriptScreen} options={{title: '모든 변환 기록'}}/>
-
+        {/* TranscriptDetail 화면 설정 */}
+        <Stack.Screen name="TransDetail" component={TranscriptDetailsScreen} options={{title: '변환 상세 기록'}}/>
 
         {/* Bottom 화면 설정 */}
         <Bottom.Screen name="MainHome" component={MainScreen} options={{headerShown: false}}/>
