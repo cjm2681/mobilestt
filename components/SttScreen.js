@@ -91,11 +91,6 @@ function SttScreen({ navigation }) {
 
       const client = new ClovaSpeechClient();
 
-      // 파일 URI에서 파일 이름 추출
-
-      //  const uriParts = audioFile.split('/');
-      //  const fileName = uriParts[uriParts.length - 1]; // 배열의 마지막 요소가 파일 이름입니다.
-
       const res = await client.req_upload({ uri: audioFile, name: fileName, type: 'audio/*' }, 'sync', null, null, null, null, true, true, null, language);
 
       if (res && res.data) {

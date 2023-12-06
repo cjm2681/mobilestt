@@ -4,6 +4,7 @@ const mysql = require('mysql2'); // MySQL 연결을 위한 mysql2 모듈을 불�
 const session = require('express-session'); // 세션 사용을 위한 express-session 모듈을 불러옵니다.
 const MySQLStore = require('express-mysql-session')(session); // MySQL을 이용한 세션 스토어를 설정하기 위한 express-mysql-session 모듈을 불러옵니다.
 const cors = require('cors'); // Cross-Origin Resource Sharing(CORS) 처리를 위한 cors 모듈을 불러옵니다.
+const crypto = require('crypto');
 
 const app = express(); // Express 애플리케이션을 생성합니다.
 app.use(cors()); // CORS 미들웨어를 적용합니다.
@@ -164,21 +165,30 @@ app.get('/userdata', (req, res) => {
 
 
 //유저 정보 수정
-app.put('/userupdate', (req, res) => {
-  const { newId, username, password } = req.body;
-  const currentUserId = req.session.userId;
+app.put('/userupdate', async (req, res) => {
+  try {
+    const { newId, username, password } = req.body;
+    const currentUserId = req.session.userId;
 
-  if (!newId || !username || !password) {
-    return res.status(400).send('모든 항목을 입력해야 합니다');
-  }
-
-  // 새로운 ID와 username이 이미 사용 중인지 확인
-  const checkExistingQuery = 'SELECT * FROM users WHERE id = ? OR username = ?';
-  db.query(checkExistingQuery, [newId, username], (checkError, checkResults) => {
-    if (checkError) {
-      return res.status(500).send('사용자 정보 확인 중 오류 발생');
+    if (!newId || !username || !password) {
+      return res.status(400).send('모든 항목을 입력해야 합니다');
     }
 
+    // 현재 사용자의 정보를 불러옵니다
+    const getCurrentUserQuery = 'SELECT * FROM users WHERE id = ?';
+    const [currentUserResults] = await db.promise().query(getCurrentUserQuery, [currentUserId]);
+    const currentUser = currentUserResults[0];
+    const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
+
+    // 입력된 정보가 기존 정보와 동일한지 확인합니다
+    if (currentUser.id === newId && currentUser.username === username && currentUser.password === hashedPassword) {
+      return res.status(400).send('입력한 정보가 기존 정보와 동일합니다');
+    }
+
+    // 새로운 ID와 username이 이미 사용 중인지 확인
+    const checkExistingQuery = 'SELECT * FROM users WHERE (id = ? OR username = ?) AND id != ?';
+    const [checkResults] = await db.promise().query(checkExistingQuery, [newId, username, currentUserId]);
+    
     // 사용 중인 ID 또는 username이 있는지 확인
     if (checkResults.length > 0) {
       if (checkResults.some(user => user.id === newId)) {
@@ -191,21 +201,19 @@ app.put('/userupdate', (req, res) => {
 
     // 사용자 정보 업데이트
     const updateQuery = 'UPDATE users SET id = ?, username = ?, password = MD5(?) WHERE id = ?';
-    db.query(updateQuery, [newId, username, password, currentUserId], (updateError, updateResults) => {
-      if (updateError) {
-        return res.status(500).send('사용자 정보 수정 중 오류 발생');
-      }
-      if (updateResults.affectedRows === 0) {
-        return res.status(404).send('해당 사용자가 존재하지 않습니다');
-      }
-      // 세션 ID 업데이트
-      req.session.userId = newId;
-      res.status(200).send('사용자 정보가 성공적으로 수정되었습니다');
-    });
-  });
+    const [updateResults] = await db.promise().query(updateQuery, [newId, username, password, currentUserId]);
+    
+    if (updateResults.affectedRows === 0) {
+      return res.status(404).send('해당 사용자가 존재하지 않습니다');
+    }
+
+    // 세션 ID 업데이트
+    req.session.userId = newId;
+    res.status(200).send('사용자 정보가 성공적으로 수정되었습니다');
+  } catch (error) {
+    return res.status(500).send('서버 내부 오류 발생');
+  }
 });
-
-
 
 
 // 텍스트 변환 기록 저장

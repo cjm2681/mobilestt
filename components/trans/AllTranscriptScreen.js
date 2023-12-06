@@ -27,8 +27,8 @@ const AllTranscriptScreen = ({ navigation }) => {
             const response = await axios.get('http://220.94.222.233:4000/allUserTranscriptions');
             setTranscripts(response.data);
         } catch (error) {
-            console.error('Error fetching transcripts:', error);
-            Alert.alert('Error', 'Failed to load transcripts');
+            console.error('Error:', error);
+            Alert.alert('Error', '불러오는데 실패 했습니다.');
         }
     };
 
@@ -57,8 +57,8 @@ const AllTranscriptScreen = ({ navigation }) => {
                             // 삭제 후 변환 기록 목록을 다시 불러옵니다.
                             fetchTranscripts();
                         } catch (error) {
-                            console.error('Error deleting transcription:', error);
-                            Alert.alert('Error', 'Failed to delete transcription');
+                            console.error('Error:', error);
+                            Alert.alert('Error', '삭제 후 불러오는데 실패했습니다.');
                         }
                     }
                 }
