@@ -7,19 +7,19 @@ import { AntDesign } from '@expo/vector-icons';
 
 
 function SumScreen({ navigation }) {
-  const [summary, setSummary] = useState('');
-  const [sumSentiment, setSumSentiment] = useState('');
+  const [summary, setSummary] = useState(''); // 요약된 텍스트 저장
+  const [sumSentiment, setSumSentiment] = useState(''); // 요약된 텍스트의 감정 분석 결과 저장
   const [selectedLanguage, setSelectedLanguage] = useState('ko'); //번역 언어 선택
   const [selectedCount, setSelectedCount] = useState('3');  //요약 문장 개수
   const [highestSentiment, setHighestSentiment] = useState(''); // 가장 높은 감정
   const [highestSentimentPercentage, setHighestSentimentPercentage] = useState(''); // 가장 높은 감정의 백분율
   const [isLoading, setIsLoading] = useState(false);  //로딩
 
-
+  // TranscriptContext에서 트랜스크립트 및 트랜스크립션 ID 가져오기
   const { transcript, transcriptionId } = useTranscript();
 
 
-
+  // 요약된 텍스트를 서버에 업로드하는 함수
   const uploadSummary = async (summaryText, transcriptionId) => {
     console.log("Uploading summary with transcriptionId:", transcriptionId);
     try {
@@ -40,7 +40,7 @@ function SumScreen({ navigation }) {
 
 
 
-
+// 텍스트 요약 처리 함수
   const handleSummary = async () => {
     setIsLoading(true);
     const config = {
@@ -75,13 +75,13 @@ function SumScreen({ navigation }) {
     setIsLoading(false);
   };
 
-
+  // 요약된 텍스트가 변경될 때마다 실행
   useEffect(() => {
     if (summary) {
       onSubmit();
     }
   }, [summary]);
-
+  // 감정 분석 요청 함수
   const onSubmit = async () => {
     const config = {
       headers: {

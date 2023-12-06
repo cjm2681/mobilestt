@@ -54,9 +54,11 @@ function MainScreen({ navigation }) {
 
 
 
-  const { transcript } = useTranscript();
+  const { transcript } = useTranscript();   // 전역 상태에서 트랜스크립트 가져오기
 
+    // 탭 버튼 클릭 핸들러
   const handleTabPress = (routeName) => {
+        // 트랜스크립트가 없는 경우 경고 메시지를 표시하고 홈 화면으로 이동
     if (!transcript && (routeName === 'SummarySentiment' || routeName === 'Translator')) {
       Alert.alert(
         "텍스트 변환 필요",

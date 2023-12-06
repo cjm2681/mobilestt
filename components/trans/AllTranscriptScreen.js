@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, BackHandler } from 'react-native';
-import { MaterialIcons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons  } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 
 const AllTranscriptScreen = ({ navigation }) => {
-    const [transcripts, setTranscripts] = useState([]);
+    const [transcripts, setTranscripts] = useState([]); // 트랜스크립션 목록 상태
 
+        // 화면 포커스 시 뒤로 가기 버튼 동작 정의
     useFocusEffect(
         useCallback(() => {
             const onBackPress = () => {
@@ -22,6 +23,7 @@ const AllTranscriptScreen = ({ navigation }) => {
         }, [navigation])
     );
 
+        // 서버에서 트랜스크립션 목록 가져오기
     const fetchTranscripts = async () => {
         try {
             const response = await axios.get('http://220.94.222.233:4000/allUserTranscriptions');
@@ -39,7 +41,7 @@ const AllTranscriptScreen = ({ navigation }) => {
     }, []);
 
 
-
+    // 트랜스크립션 삭제 함수
     const deleteTranscription = (transcriptionId) => {
         Alert.alert(
             '변환 기록 삭제',

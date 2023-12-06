@@ -8,17 +8,20 @@ import axios from 'axios'
 const TranscriptDetailsScreen = ({ route, navigation }) => {
 
   const [transcriptionDetails, setTranscriptionDetails] = useState(null);
-  // route.params에서 transcriptionId를 추출합니다.
-  const { transcriptionId } = route.params;
 
+  const { transcriptionId } = route.params;   // route.params에서 transcriptionId를 추출
+
+
+  //검색어 관련
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState({});
   const [regex, setRegex] = useState(null);
 
+    // 화면 포커스 시 실행되는 효과
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        // 여기에서 뒤로가기 버튼을 눌렀을 때의 동작을 정의합니다.
+        // 여기에서 뒤로가기 버튼을 눌렀을 때의 동작을 정의
         navigation.goBack(); // 이전 화면으로 이동
         return true; // 이벤트 버블링을 막기 위해 true를 반환
       };
@@ -39,7 +42,7 @@ const TranscriptDetailsScreen = ({ route, navigation }) => {
       return;
     }
 
-    const newRegex = new RegExp(`(${searchText})`, 'gi');
+    const newRegex = new RegExp(`(${searchText})`, 'gi'); // 검색어에 대한 정규식 생성
     setRegex(newRegex);
 
     const newSearchResults = {};
@@ -59,7 +62,7 @@ const TranscriptDetailsScreen = ({ route, navigation }) => {
 
 
 
-
+  // 트랜스크립션 상세 정보 가져오기
   useEffect(() => {
     console.log("Transcription ID: ", transcriptionId);
 

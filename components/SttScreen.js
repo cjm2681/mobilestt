@@ -5,14 +5,14 @@ import { Picker } from '@react-native-picker/picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios'
 
-import ClovaSpeechClient from './Clova/ClovaSpeechClient'; // ClovaSpeechClient 클래스를 임포트
+import ClovaSpeechClient from './Clova/ClovaSpeechClient';
 
 import { useTranscript } from './TranscriptContext';
 
 
 
 function SttScreen({ navigation }) {
-  const [audioFile, setAudioFile] = useState(null);
+  const [audioFile, setAudioFile] = useState(null); // 선택된 오디오 파일 저장
   const [transcriptSave, setTranscriptSave] = useState(''); //텍스트 변환
   const [transcript2, setTranscript2] = useState('');   // 화자인식
   const [showTranscript, setShowTranscript] = useState(false); //화자인식버튼 가시성제어
@@ -25,7 +25,7 @@ function SttScreen({ navigation }) {
 
   const { transcript, setTranscript, transcriptionId, setTranscriptionId } = useTranscript();  //Context
 
-
+  // 검색 관련 상태 변수
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [regex, setRegex] = useState(null);
@@ -44,7 +44,7 @@ function SttScreen({ navigation }) {
   };
 
 
-
+  // 파일 선택 핸들러
   const handleFileChange = async () => {
     let result = await DocumentPicker.getDocumentAsync({
       type: 'audio/*',
@@ -64,7 +64,7 @@ function SttScreen({ navigation }) {
 
 
 
-
+ // 오디오 파일을 서버에 업로드하고 트랜스크립션 ID 저장
   const uploadTranscription = async (audioFileName, transcriptionText) => {
     try {
       const response = await axios.post('http://220.94.222.233:4000/uploadTranscription', {
@@ -84,7 +84,7 @@ function SttScreen({ navigation }) {
 
 
 
-
+  // 텍스트 변환 처리 함수
   const handleTranscript = async () => {
     if (audioFile) {
       setIsLoading(true); // 데이터 로딩 시작

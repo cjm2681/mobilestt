@@ -6,14 +6,15 @@ import { useTranscript } from './TranscriptContext';
 import { MaterialIcons } from '@expo/vector-icons';
 
 function TransScreen({ navigation }) {
-  const [transResult, setTransResult] = useState('')
-  const [sourceLanguage, setSourceLanguage] = useState('ko')
-  const [targetLanguage, setTargetLanguage] = useState('en')
+  const [transResult, setTransResult] = useState('') // 번역 결과를 저장할 상태
+  const [sourceLanguage, setSourceLanguage] = useState('ko') // 소스 언어를 저장할 상태
+  const [targetLanguage, setTargetLanguage] = useState('en') // 대상 언어를 저장할 상태
   const [isLoading, setIsLoading] = useState(false);  //로딩
 
-  const { transcript, transcriptionId } = useTranscript();
+  const { transcript, transcriptionId } = useTranscript(); // TranscriptContext에서 데이터 가져오기
 
 
+  // 번역 결과를 서버에 업로드하는 함수
   const uploadTranslations = async (translationsText, transcriptionId) => {
     console.log("Uploading translations with transcriptionId:", transcriptionId);
     try {
@@ -29,9 +30,7 @@ function TransScreen({ navigation }) {
     }
   };
 
-
-
-
+  // API 요청에 사용될 헤더 설정
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -63,7 +62,7 @@ function TransScreen({ navigation }) {
     setIsLoading(false);
   };
 
-
+ // 각 언어에 대한 타겟 옵션
   const allTargetOptions = [
     { label: "한국어", value: "ko" },
     { label: "영어", value: "en" },
