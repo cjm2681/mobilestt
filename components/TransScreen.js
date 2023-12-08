@@ -18,7 +18,7 @@ function TransScreen({ navigation }) {
   const uploadTranslations = async (translationsText, transcriptionId) => {
     console.log("Uploading translations with transcriptionId:", transcriptionId);
     try {
-      const response = await axios.post('http://220.94.222.233:4000/uploadTranslations', {
+      const response = await axios.post('http://localhost/uploadTranslations', {
         translationsText,
         transcriptionId
       });
@@ -34,8 +34,8 @@ function TransScreen({ navigation }) {
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      'X-NCP-APIGW-API-KEY-ID': 'fb6tfb4y6a',
-      'X-NCP-APIGW-API-KEY': 'qDLBtofscKF7EweZuJXTsDMyCx3EQ7IWNTju7TCx',
+      'X-NCP-APIGW-API-KEY-ID': 'KEY-ID',
+      'X-NCP-APIGW-API-KEY': 'KEY',
     },
   }
   const handleTranslation = async () => {//papago 번역기능

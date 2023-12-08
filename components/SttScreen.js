@@ -67,7 +67,7 @@ function SttScreen({ navigation }) {
  // 오디오 파일을 서버에 업로드하고 트랜스크립션 ID 저장
   const uploadTranscription = async (audioFileName, transcriptionText) => {
     try {
-      const response = await axios.post('http://220.94.222.233:4000/uploadTranscription', {
+      const response = await axios.post('http://localhost/uploadTranscription', {
         audioFileName,
         transcriptionText
       });

@@ -26,7 +26,7 @@ const AllTranscriptScreen = ({ navigation }) => {
         // 서버에서 트랜스크립션 목록 가져오기
     const fetchTranscripts = async () => {
         try {
-            const response = await axios.get('http://220.94.222.233:4000/allUserTranscriptions');
+            const response = await axios.get('http://localhost/allUserTranscriptions');
             setTranscripts(response.data);
         } catch (error) {
             console.error('Error:', error);
@@ -55,7 +55,7 @@ const AllTranscriptScreen = ({ navigation }) => {
                     text: '삭제',
                     onPress: async () => {
                         try {
-                            await axios.delete(`http://220.94.222.233:4000/deleteTranscription/${transcriptionId}`);
+                            await axios.delete(`http://localhost/deleteTranscription/${transcriptionId}`);
                             // 삭제 후 변환 기록 목록을 다시 불러옵니다.
                             fetchTranscripts();
                         } catch (error) {

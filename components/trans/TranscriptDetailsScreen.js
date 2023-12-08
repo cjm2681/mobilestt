@@ -68,7 +68,7 @@ const TranscriptDetailsScreen = ({ route, navigation }) => {
 
     const fetchTranscriptionDetails = async () => {
       try {
-        const response = await axios.get(`http://220.94.222.233:4000/transcriptionDetails/${transcriptionId}`);
+        const response = await axios.get(`http://localhost/transcriptionDetails/${transcriptionId}`);
         console.log("Response data: ", response.data);
         setTranscriptionDetails(response.data);
       } catch (error) {

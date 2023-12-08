@@ -43,7 +43,7 @@ function UserInfoScreen({ navigation }) {
             return;
         }
 
-        axios.put('http://220.94.222.233:4000/userupdate', {
+        axios.put('http://localhost/userupdate', {
             newId,
             username,
             password,
@@ -52,7 +52,7 @@ function UserInfoScreen({ navigation }) {
                 Alert.alert('성공', '유저 정보가 수정되었습니다.\n새로 로그인해주세요.', [
                     {
                         text: 'OK',
-                        onPress: () => axios.get('http://220.94.222.233:4000/logout')
+                        onPress: () => axios.get('http://localhost/logout')
                             .then((response) => {
                                 if (response.status === 200) {
                                     navigation.navigate('Login'); // 로그인 화면으로 이동

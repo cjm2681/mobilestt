@@ -23,7 +23,7 @@ function SumScreen({ navigation }) {
   const uploadSummary = async (summaryText, transcriptionId) => {
     console.log("Uploading summary with transcriptionId:", transcriptionId);
     try {
-      const response = await axios.post('http://220.94.222.233:4000/uploadSummary', {
+      const response = await axios.post('http://localhost/uploadSummary', {
         summaryText,
         transcriptionId
       });
@@ -46,8 +46,8 @@ function SumScreen({ navigation }) {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        'X-NCP-APIGW-API-KEY-ID': 'o1eguzqxqv',   // 본인의 키
-        'X-NCP-APIGW-API-KEY': 'KjMHvp7ZDmLo81xNlM3SqVOQGZmjcqz7jss978PC',    // 본인의 키
+        'X-NCP-APIGW-API-KEY-ID': 'KEY-ID',   // 본인의 키
+        'X-NCP-APIGW-API-KEY': 'KEY',    // 본인의 키
       },
     };
 
@@ -86,8 +86,8 @@ function SumScreen({ navigation }) {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        'X-NCP-APIGW-API-KEY-ID': 'o1eguzqxqv',   // 본인의 키
-        'X-NCP-APIGW-API-KEY': 'KjMHvp7ZDmLo81xNlM3SqVOQGZmjcqz7jss978PC',    // 본인의 키
+        'X-NCP-APIGW-API-KEY-ID': 'KEY-ID',   // 본인의 키
+        'X-NCP-APIGW-API-KEY': 'KEY',    // 본인의 키
       },
     };
 

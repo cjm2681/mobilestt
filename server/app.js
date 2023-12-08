@@ -14,10 +14,10 @@ app.use(bodyParser.json()); // JSON 형식의 요청 바디를 파싱합니다.
 
 // 세션 설정
 const sessionStore = new MySQLStore({
-  host: 'database-1.czzyww2dw0mt.ap-northeast-2.rds.amazonaws.com', // MySQL 호스트 주소를 설정합니다.
+  host: 'locolhost', // MySQL 호스트 주소를 설정합니다.
   user: 'root', // MySQL 사용자 이름을 설정합니다.
-  password: 'qwer1234', // MySQL 비밀번호를 설정합니다.
-  database: 'Record', // 사용할 데이터베이스 이름을 설정합니다.
+  password: 'pw', // MySQL 비밀번호를 설정합니다.
+  database: 'm', // 사용할 데이터베이스 이름을 설정합니다.
   clearExpired: true, // 만료된 세션 데이터를 자동으로 삭제할지 여부를 설정합니다.
   checkExpirationInterval: 10 * 60 * 1000 // 만료된 세션을 확인하는 주기를 설정합니다. (10분)
 });
@@ -34,10 +34,10 @@ app.use(session({
 
 // MySQL 연결 설정
 const db = mysql.createConnection({
-  host: 'database-1.czzyww2dw0mt.ap-northeast-2.rds.amazonaws.com', // MySQL 호스트 주소를 설정합니다.
+  host: 'localhost', // MySQL 호스트 주소를 설정합니다.
   user: 'root', // MySQL 사용자 이름을 설정합니다.
-  password: 'qwer1234', // MySQL 비밀번호를 설정합니다.
-  database: 'Record', // 사용할 데이터베이스 이름을 설정합니다.
+  password: 'pw', // MySQL 비밀번호를 설정합니다.
+  database: 'm', // 사용할 데이터베이스 이름을 설정합니다.
 });
 db.connect((err) => {
   if (err) {

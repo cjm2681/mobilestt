@@ -22,7 +22,7 @@ function LoginScreen({ navigation }) {
     }
 
     axios
-      .post('http://220.94.222.233:4000/login', {
+      .post('http://localhost/login', {
         id,
         password,
       })

@@ -25,7 +25,7 @@ function SignupScreen({ navigation }) {
       return;
     }
 
-    axios.post('http://220.94.222.233:4000/register', {
+    axios.post('http://localhost/register', {
       id,
       username,
       password,

@@ -3,9 +3,9 @@ import axios from 'axios'
 
 class ClovaSpeechClient {
   // Clova Speech invoke URL 본인의 URL
-  invoke_url = 'https://clovaspeech-gw.ncloud.com/external/v1/5357/b90bb4731ecc409aa579999f389d46cfbef942820f6e071baeba6c9be6a31249';
+  invoke_url = 'invoke_url';
   // Clova Speech secret key 본인의  시크릿키
-  secret = 'e35292a1c7ba43e190ce81365057bfad';
+  secret = 'secret';
 
 
   async req_upload(file, completion, callback = null, userdata = null, forbiddens = null, boostings = null,

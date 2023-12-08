@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { MaterialIcons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+import { useTranscript } from '../TranscriptContext'
 import axios from 'axios';
 
 const UserScreen = ({ navigation }) => {
@@ -14,10 +15,11 @@ const UserScreen = ({ navigation }) => {
 
   const [transcriptions, setTranscriptions] = useState([]);
 
+  const { setTranscript } = useTranscript();
 
   // 사용자 정보를 불러오는 함수
   const fetchUserInfo = () => {
-    axios.get('http://220.94.222.233:4000/userdata')
+    axios.get('http://localhost/userdata')
       .then(response => {
         setUser({
           id: response.data.id,
@@ -30,7 +32,7 @@ const UserScreen = ({ navigation }) => {
       });
 
     // 최근 변환 기록 3개 불러오기
-    axios.get('http://220.94.222.233:4000/allUserTranscriptions')
+    axios.get('http://localhost/allUserTranscriptions')
       .then(response => {
         setTranscriptions(response.data.slice(0, 3));
       })
@@ -50,7 +52,7 @@ const UserScreen = ({ navigation }) => {
   useEffect(() => {
     // 사용자 정보를 불러오는 함수. 이 예시에서는 가상의 API 호출을 사용합니다.
     // 실제 애플리케이션에서는 이 부분을 서버로부터 사용자 데이터를 받아오는 로직으로 교체해야 합니다.
-    axios.get('http://220.94.222.233:4000/userdata')
+    axios.get('http://localhost/userdata')
       .then(response => {
         if (response.status === 200) {
           setUser({
@@ -81,9 +83,10 @@ const UserScreen = ({ navigation }) => {
         {
           text: "예",
           onPress: () => {
-            axios.get('http://220.94.222.233:4000/logout')
+            axios.get('http://localhost/logout')
               .then((response) => {
                 if (response.status === 200) {
+                  setTranscript(''); // transcript 값을 초기화
                   navigation.navigate('Login'); // 로그인 화면으로 이동
                 } else {
                   Alert.alert("로그아웃 실패", response.data); // 로그아웃 실패 메시지 표시
